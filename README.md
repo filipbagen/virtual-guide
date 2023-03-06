@@ -12,3 +12,11 @@ pip install -r requirements.txt
 pip install opencv-python
 ```
 
+``` bash
+# Install dependencies (only the first time)
+pip install git+https://github.com/openai/whisper.git 
+
+pip install sounddevice
+
+pip install scipy
+```
