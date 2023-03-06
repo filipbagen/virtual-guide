@@ -9,6 +9,6 @@ pip install -r requirements.txt
 ## Should install the following: 
 
 ``` bash
-
+pip install opencv-python
 ```
 
