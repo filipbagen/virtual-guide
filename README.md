@@ -17,3 +17,5 @@ pip install sounddevice
 
 pip install scipy
 ```
+
+## Whisper OpenAI require Python 3.8. See the following the link: 
