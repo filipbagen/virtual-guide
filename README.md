@@ -6,7 +6,7 @@
 pip install -r requirements.txt
 ```
 
-## Should install the following: 
+## The requirements.txt file should install the following: 
 
 ``` bash
 pip install opencv-python
@@ -18,6 +18,6 @@ pip install sounddevice
 pip install scipy
 ```
 
-## Whisper OpenAI require Python 3.8. If you want too downgrade, see the following link: 
+### Whisper OpenAI require Python 3.8. If you want too downgrade, see the following link: 
 
 https://stackoverflow.com/questions/62898911/how-to-downgrade-python-version-from-3-8-to-3-7-mac
