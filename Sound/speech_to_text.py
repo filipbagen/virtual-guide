@@ -13,5 +13,7 @@ def speech_to_text():
 
     model = whisper.load_model("base")
     result = model.transcribe("audio.mp3")
-    print(result["text"])
+    #print(result["text"])
     print('Finished')
+    
+    return result

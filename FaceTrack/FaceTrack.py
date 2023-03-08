@@ -7,8 +7,8 @@ def face_track():
 
     # Boolean for face in screen or not 
     face = False
-
-    x = ""
+    
+    x = []
 
     # Face tracking values 
     faceCoordinatesX = []
@@ -41,8 +41,7 @@ def face_track():
             faceCoordinatesY.append(y)
             faceCoordinatesW.append(w)
             faceCoordinatesH.append(h)
-            print("True")
-            print(x)
+            
 
         # Display helping text and boolean attribute 
         font = cv2.FONT_HERSHEY_SIMPLEX
@@ -55,15 +54,18 @@ def face_track():
         b = "False"
 
         # Check if face is in frame and display text accordingly
-        if x in faces != "":
+        if x in faces:
+            face = True
             cv2.putText(frame, a, org, font, 
                         fontScale, colorTrue, thickness, cv2.LINE_AA)
         else: 
+            face = False
             cv2.putText(frame, b, org, font, 
                         fontScale, colorFalse, thickness, cv2.LINE_AA)
 
         # Display the resulting frame
         cv2.imshow('Video', frame)
+        yield face
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
