@@ -5,15 +5,10 @@ from PIL import Image, ImageTk
 vid = cv2.VideoCapture(0)
 faceCascade = cv2.CascadeClassifier('Facetrack/haarcascade_frontalface_default.xml')
 
-width, height = 800, 600
+width, height = 1500, 900
 
 vid.set(cv2.CAP_PROP_FRAME_WIDTH, width)
 vid.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
-
-faceCoordinatesX = []
-faceCoordinatesY = []
-faceCoordinatesW = []
-faceCoordinatesH = []
 
 app = Tk()
 
@@ -32,7 +27,9 @@ def draw_box(x, y, w, h):
 def open_camera():
     _, frame = vid.read()
 
-    opencv_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
+    imagetemp = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
+    
+    opencv_image = cv2.flip(imagetemp, 1)
 
     faces = faceCascade.detectMultiScale(opencv_image, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
 
