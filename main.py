@@ -5,7 +5,7 @@ from PIL import Image, ImageTk
 vid = cv2.VideoCapture(0)
 faceCascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
-width, height = 1500, 900
+width, height = 1500, 800
 
 vid.set(cv2.CAP_PROP_FRAME_WIDTH, width)
 vid.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
@@ -22,7 +22,12 @@ canvas.pack()
 
 def draw_box(x, y, w, h):
     canvas.delete("all")
-    canvas.create_rectangle(x, y, x+w, y+h, fill='red', width=2, outline='red')
+    canvas.create_oval(x, y, x+w, y+h, fill='white', width=3, outline='white')
+    image = Image.open("smiley.png")
+    image = image.resize((int(w), int(h)))
+    photo = ImageTk.PhotoImage(image)
+    canvas.create_image(x + w/2, y + h/2, image=photo)
+    canvas.image = photo
 
 def open_camera():
     _, frame = vid.read()
@@ -35,12 +40,6 @@ def open_camera():
 
     for (x, y, w, h) in faces:
         draw_box(x, y, w, h)
-        
-        # cv2.rectangle(opencv_image, (x, y), (x+w, y+h), (0, 255, 0), 2)
-        # faceCoordinatesX.append(x) # X-led 
-        # faceCoordinatesY.append(y) # Y-led
-        # faceCoordinatesW.append(w) # STRL 
-        # faceCoordinatesH.append(h) # HÖJD
     
     captured_image = Image.fromarray(opencv_image)
 
@@ -48,13 +47,11 @@ def open_camera():
 
     label_widget.photo_image = photo_image
 
-    # label_widget.configure(image=photo_image) # Ta bort om du inte vill ha bild
-
     label_widget.after(10, open_camera)
 
 
-button1 = Button(app, text="Open Camera", command=open_camera)
-button1.pack()
+button1 = Button(app, text="START", command=open_camera)
+button1.pack(side=TOP)
 
 app.mainloop()
 
