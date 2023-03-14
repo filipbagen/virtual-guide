@@ -31,20 +31,18 @@ def open_camera():
 
     for (x, y, w, h) in faces:
         cv2.rectangle(opencv_image, (x, y), (x+w, y+h), (0, 255, 0), 2)
-        # faceCoordinatesX.append(x) # X-led 
-        # faceCoordinatesY.append(y)
-        # faceCoordinatesW.append(w) # STRL 
-        # faceCoordinatesH.append(h)
-        print(w)
+        faceCoordinatesX.append(x) # X-led 
+        faceCoordinatesY.append(y) # Y-led
+        faceCoordinatesW.append(w) # STRL 
+        faceCoordinatesH.append(h) # HÖJD
     
-            
     captured_image = Image.fromarray(opencv_image)
 
     photo_image = ImageTk.PhotoImage(image=captured_image)
 
     label_widget.photo_image = photo_image
 
-    label_widget.configure(image=photo_image)
+    label_widget.configure(image=photo_image) # Ta bort om du inte vill ha bild
 
     label_widget.after(10, open_camera)
 
