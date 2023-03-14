@@ -12,6 +12,13 @@ vid.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
 
 app = Tk()
 
+label = Label(
+    text="Hello, I'am your Virtual Guide",
+    foreground="white", 
+    background="black"  
+)
+label.pack()
+
 app.bind('<Escape>', lambda e: app.quit())
 
 label_widget = Label(app)
@@ -31,28 +38,27 @@ def draw_box(x, y, w, h):
 
 def open_camera():
     _, frame = vid.read()
-
     imagetemp = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
-    
     opencv_image = cv2.flip(imagetemp, 1)
-
+    
     faces = faceCascade.detectMultiScale(opencv_image, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
-
     for (x, y, w, h) in faces:
         draw_box(x, y, w, h)
     
     captured_image = Image.fromarray(opencv_image)
-
     photo_image = ImageTk.PhotoImage(image=captured_image)
-
     label_widget.photo_image = photo_image
-
     label_widget.after(10, open_camera)
 
-
-button1 = Button(app, text="START", command=open_camera)
-button1.pack(side=TOP)
+button = Button(
+    text="START",
+    width=25,
+    height=5,
+    bg="white",
+    fg="black",
+    command=open_camera
+)
+button.pack()
 
 app.mainloop()
-
 vid.release()
