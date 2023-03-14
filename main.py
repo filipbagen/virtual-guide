@@ -3,7 +3,7 @@ import cv2
 from PIL import Image, ImageTk
 
 vid = cv2.VideoCapture(0)
-faceCascade = cv2.CascadeClassifier('Facetrack/haarcascade_frontalface_default.xml')
+faceCascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
 width, height = 1500, 900
 
@@ -22,7 +22,7 @@ canvas.pack()
 
 def draw_box(x, y, w, h):
     canvas.delete("all")
-    canvas.create_rectangle(x, y, x+w, y+h, fill='black', width=2, outline='black')
+    canvas.create_rectangle(x, y, x+w, y+h, fill='red', width=2, outline='red')
 
 def open_camera():
     _, frame = vid.read()
@@ -48,7 +48,7 @@ def open_camera():
 
     label_widget.photo_image = photo_image
 
-    #label_widget.configure(image=photo_image) # Ta bort om du inte vill ha bild
+    # label_widget.configure(image=photo_image) # Ta bort om du inte vill ha bild
 
     label_widget.after(10, open_camera)
 
