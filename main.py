@@ -22,6 +22,13 @@ app.bind('<Escape>', lambda e: app.quit())
 label_widget = Label(app)
 label_widget.pack()
 
+canvas = Canvas(app, width=width, height=height)
+canvas.pack()
+
+def draw_box(x, y, w, h):
+    canvas.delete("all")
+    canvas.create_rectangle(x, y, x+w, y+h, fill='black', width=2, outline='black')
+
 def open_camera():
     _, frame = vid.read()
 
@@ -30,11 +37,13 @@ def open_camera():
     faces = faceCascade.detectMultiScale(opencv_image, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
 
     for (x, y, w, h) in faces:
-        cv2.rectangle(opencv_image, (x, y), (x+w, y+h), (0, 255, 0), 2)
-        faceCoordinatesX.append(x) # X-led 
-        faceCoordinatesY.append(y) # Y-led
-        faceCoordinatesW.append(w) # STRL 
-        faceCoordinatesH.append(h) # HÖJD
+        draw_box(x, y, w, h)
+        
+        # cv2.rectangle(opencv_image, (x, y), (x+w, y+h), (0, 255, 0), 2)
+        # faceCoordinatesX.append(x) # X-led 
+        # faceCoordinatesY.append(y) # Y-led
+        # faceCoordinatesW.append(w) # STRL 
+        # faceCoordinatesH.append(h) # HÖJD
     
     captured_image = Image.fromarray(opencv_image)
 
@@ -42,7 +51,7 @@ def open_camera():
 
     label_widget.photo_image = photo_image
 
-    label_widget.configure(image=photo_image) # Ta bort om du inte vill ha bild
+    #label_widget.configure(image=photo_image) # Ta bort om du inte vill ha bild
 
     label_widget.after(10, open_camera)
 
