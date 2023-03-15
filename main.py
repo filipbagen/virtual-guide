@@ -1,6 +1,9 @@
 from tkinter import *
 import cv2
 from PIL import Image, ImageTk
+import whisper
+import sounddevice
+from scipy.io.wavfile import write 
 
 vid = cv2.VideoCapture(0)
 faceCascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
@@ -49,6 +52,20 @@ def open_camera():
     photo_image = ImageTk.PhotoImage(image=captured_image)
     label_widget.photo_image = photo_image
     label_widget.after(10, open_camera)
+    
+def listen(): 
+    sr=44100
+    seconds=3
+    print('Recording\n')
+    record_voice=sounddevice.rec(sr*seconds, samplerate=sr, channels=1) 
+    sounddevice.wait()
+    write('audio.mp3',sr,record_voice)
+
+    model = whisper.load_model("base")
+    result = model.transcribe("audio.mp3")
+    #print(result["text"])
+    print('Finished')
+    
 
 button = Button(
     text="START",
@@ -59,6 +76,16 @@ button = Button(
     command=open_camera
 )
 button.pack()
+
+button2 = Button(
+    text="START",
+    width=25,
+    height=5,
+    bg="white",
+    fg="black",
+    command=listen
+)
+button2.pack()
 
 app.mainloop()
 vid.release()
