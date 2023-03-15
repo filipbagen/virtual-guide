@@ -2,8 +2,6 @@ from tkinter import *
 from functions.image import open_camera
 from functions.talk import talk
 
-
-    
 def gui(app): 
     
     width, height = 1500, 800
