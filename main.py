@@ -4,6 +4,9 @@ from PIL import Image, ImageTk
 import whisper
 import sounddevice
 from scipy.io.wavfile import write 
+from gtts import gTTS
+from playsound import playsound
+import os
 
 vid = cv2.VideoCapture(0)
 faceCascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
@@ -53,20 +56,14 @@ def open_camera():
     label_widget.photo_image = photo_image
     label_widget.after(10, open_camera)
     
-def listen(): 
-    sr=44100
-    seconds=3
-    print('Recording\n')
-    record_voice=sounddevice.rec(sr*seconds, samplerate=sr, channels=1) 
-    sounddevice.wait()
-    write('audio.mp3',sr,record_voice)
+def talk(text): 
+    tts = gTTS(text=text, lang='sv', slow=False)
 
-    model = whisper.load_model("base")
-    result = model.transcribe("audio.mp3")
-    #print(result["text"])
-    print('Finished')
+    tts.save("tts.mp3")
     
-
+    path = os.path.abspath("tts.mp3")
+    playsound(path)
+    
 button = Button(
     text="START",
     width=25,
@@ -77,15 +74,17 @@ button = Button(
 )
 button.pack()
 
-button2 = Button(
-    text="START",
-    width=25,
-    height=5,
-    bg="white",
-    fg="black",
-    command=listen
-)
-button2.pack()
+def retrieve_input():
+    inputValue=textBox.get("1.0","end-1c")
+    talk(inputValue)
+
+textBox=Text(app, height=200, width=100)
+textBox.pack()
+    
+buttonCommit=Button(app, height=1, width=10, text="Commit", 
+                    command=lambda: retrieve_input())
+
+buttonCommit.pack()
 
 app.mainloop()
 vid.release()
