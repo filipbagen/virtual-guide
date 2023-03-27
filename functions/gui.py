@@ -1,6 +1,7 @@
 from tkinter import *
 from functions.image import open_camera
 from functions.talk import talk
+from functions.talk import listen
 
 def gui(app): 
     
@@ -27,22 +28,22 @@ def gui(app):
     textBox=Text(
         app,
         height=10, 
-        width=50
+        width=50,
         )
     textBox.pack()
     textBox.place(x=100, y=140)
         
     buttonCommit=Button(
         app,
-        height=1, 
-        width=10, 
-        text="TEXT PROMPT", 
+        width=25,
+        height=5,
+        text="SEND TEXT PROMPT", 
         command=lambda: retrieve_input()
         )
     buttonCommit.pack()
     buttonCommit.place(x=100, y=300)
 
-    button = Button(
+    buttonCamera = Button(
         text="START CAMERA FEED",
         width=25,
         height=5,
@@ -51,6 +52,18 @@ def gui(app):
         command=lambda: open_camera(canvas,label_widget,width, height)
 
         )
-    button.pack()
-    button.place(x=100, y=340)
+    buttonCamera.pack()
+    buttonCamera.place(x=100, y=400)
+    
+    buttonListen = Button(
+        text="START WHISPER FEED",
+        width=25,
+        height=5,
+        bg="white",
+        fg="black",
+        command=lambda: listen()
+
+        )
+    buttonListen.pack()
+    buttonListen.place(x=100, y=500)
 
