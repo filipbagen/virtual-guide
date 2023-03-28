@@ -1,8 +1,7 @@
-# virtual-guide
-
-### Desktop app prototype, använder ansikts trackern för att skapa en smiley som följer dina rörelser.
+# virtual-guide MAIN
 
 ### To run the scripts, first run the following command to download all dependencies. 
+### Run main.py
 
 ``` bash
 # Install all dependencies
