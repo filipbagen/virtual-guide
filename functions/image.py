@@ -3,17 +3,15 @@ import cv2
 from PIL import Image, ImageTk
 import threading
 
+
+
 def draw_box(x, y, w, h, canvas, vid):
     canvas.delete("all")
     canvas.create_oval(x, y, x+w, y+h, fill='white', width=3, outline='white')
-    if not hasattr(canvas, "smiley.png"): # if the image doesn't exist yet, create it
-        image = Image.open("smiley.png")
-        image = image.resize((int(w), int(h)))
-        photo = ImageTk.PhotoImage(image)
-        canvas.image_id = canvas.create_image(x + w/2, y + h/2, image=photo)
-        canvas.image = photo
-    else: # if the image already exists, update its coordinates
-        canvas.coords(canvas.image_id, x + w/2, y + h/2)
+    
+    # img= ImageTk.PhotoImage(Image.open("smiley.png"))
+    # canvas.create_image(x, y, anchor=NW, image=img)
+    # canvas.img_tk = img
 
 def open_camera(canvas,label_widget,width, height):
     vid = cv2.VideoCapture(0)
