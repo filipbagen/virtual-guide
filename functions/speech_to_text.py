@@ -17,8 +17,10 @@ def speech_to_text():
                 text = recognizer.recognize_google(audio, language="sv-SE")
                 text = text.lower()
 
-                # print(f"{text}")
+                print(f"{text}")
                 return text
 
         except speech_recognition.UnknownValueError:
             print("Could not understand audio")
+            
+speech_to_text()

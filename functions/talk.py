@@ -2,12 +2,11 @@ from tkinter import *
 from gtts import gTTS
 from playsound import playsound
 import os
+import speech_recognition
+import pyttsx3
+import time
 
-# import sounddevice
-# from scipy.io.wavfile import write 
-
-# import whisper
-# model = whisper.load_model("tiny")
+t_end = time.time() + 5
 
 def talk(text): 
     tts = gTTS(text=text, lang='sv', slow=False)
@@ -17,12 +16,24 @@ def talk(text):
     path = os.path.abspath("tts.mp3")
     playsound(path)
     
-    
-def listen():
-    print("Listening")
-    # sr=44100
-    # seconds=3
-    # print('Recording\n')
-    # record_voice=sounddevice.rec(sr*seconds, samplerate=sr, channels=1) 
-    # sounddevice.wait()
-    # write('audiotest.mp3',sr,record_voice)
+
+def speech_to_text():
+
+    recognizer = speech_recognition.Recognizer()
+
+    while time.time() < t_end:
+
+        try:
+
+            with speech_recognition.Microphone() as mic:
+                
+                recognizer.adjust_for_ambient_noise(mic, duration=0.2)
+                audio = recognizer.listen(mic)
+
+                text = recognizer.recognize_google(audio, language="sv-SE")
+                text = text.lower()
+
+                return (f"{text}")
+            
+        except speech_recognition.UnknownValueError:
+            return("Could not understand audio")
