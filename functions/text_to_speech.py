@@ -1,12 +1,27 @@
+from gtts import gTTS
+from playsound import playsound
+import os
 import speech_recognition
 import pyttsx3
+import time
+
+t_end = time.time() + 5
+
+
+def talk(text):
+    tts = gTTS(text=text, lang='sv', slow=False)
+
+    tts.save("tts.mp3")
+
+    path = os.path.abspath("tts.mp3")
+    playsound(path)
 
 
 def speech_to_text():
 
     recognizer = speech_recognition.Recognizer()
 
-    while True:
+    while time.time() < t_end:
 
         try:
 
@@ -18,8 +33,7 @@ def speech_to_text():
                 text = recognizer.recognize_google(audio, language="sv-SE")
                 text = text.lower()
 
-                print(f"{text}")
-                return text
+                return (f"{text}")
 
         except speech_recognition.UnknownValueError:
-            print("Could not understand audio")
+            return ("Could not understand audio")
