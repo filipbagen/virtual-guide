@@ -2,7 +2,7 @@ from huggingface_hub import login
 import torch
 from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
 
-login("")
+login("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")
 # Initialize Variables
 # model_name = "AI-Sweden-Models/gpt-sw3-1.3b"
 model_name = "AI-Sweden-Models/gpt-sw3-126m"
@@ -28,7 +28,7 @@ def generate_text(prompt):
         inputs=input_ids,
         max_new_tokens=20,
         do_sample=True,
-        top_p=1, temperature=0.7
+        top_p=1, temperature=0.3
     )
     return tokenizer.decode(output[0])
 
