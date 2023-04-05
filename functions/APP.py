@@ -8,6 +8,7 @@ from text_to_speech import talk
 
 from ImageAnlysis import VideoWidget
 
+
 class ConversationThread(QThread):
     input_signal = pyqtSignal(str)
     output_signal = pyqtSignal(str)
@@ -16,11 +17,12 @@ class ConversationThread(QThread):
         while True:
             input = speech_rec()
             self.input_signal.emit(input)
-            
+
             output = generate_text(input)
             self.output_signal.emit(output)
-            
+
             talk(output)
+
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -47,7 +49,6 @@ class MainWindow(QWidget):
 
         self.video_widget = VideoWidget(self)
         self.video_widget.setGeometry(700, 140, 780, 620)
-        
 
         self.buttonStart = QPushButton("START CONVERSATION", self)
         self.buttonStart.setGeometry(100, 500, 200, 100)
@@ -66,6 +67,7 @@ class MainWindow(QWidget):
     def on_button_clicked(self):
         if not self.conversation_thread.isRunning():
             self.conversation_thread.start()
+
 
 if __name__ == '__main__':
     app = QApplication([])
