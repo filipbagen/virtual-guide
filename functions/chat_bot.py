@@ -2,7 +2,7 @@ from huggingface_hub import login
 import torch
 from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
 
-login("")
+login("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")
 # Initialize Variables
 # model_name = "AI-Sweden-Models/gpt-sw3-1.3b"
 model_name = "AI-Sweden-Models/gpt-sw3-126m"
