@@ -5,7 +5,6 @@ import os
 
 # https://github.com/openai/whisper
 
-
 def speech_rec():
     sr = 44100
     seconds = 3

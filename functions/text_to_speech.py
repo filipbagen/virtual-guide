@@ -6,7 +6,7 @@ import os
 def talk(text):
     tts = TTS("tts_models/sv/cv/vits")
 
-    tts.tts_to_file("Det här är ett test med rösten. Vad gör du just nu? ")
+    tts.tts_to_file(text)
 
     path = os.path.abspath("output.wav")
     playsound(path)
