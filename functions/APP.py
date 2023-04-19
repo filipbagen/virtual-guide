@@ -105,7 +105,7 @@ class MainWindow(QWidget):
 
     def set_text(self, text):
         self.textBoxInput.append(text)
-        self.textBoxoutput.append(text)
+        self.textBoxInput.append(text)
 
     def on_button_clicked(self):
         self.textBoxInput.setText(self.textBoxInput.toPlainText() + "\n\nConversation started, I'am listening..\n\n")
