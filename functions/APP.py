@@ -8,20 +8,21 @@ from text_to_speech import talk
 
 from ImageAnlysis import VideoWidget
 
+running = True
 
 class ConversationThread(QThread):
     input_signal = pyqtSignal(str)
     output_signal = pyqtSignal(str)
 
     def run(self):
-        while True:
+        while running:
             input = speech_rec()
             self.input_signal.emit(input)
 
             output = generate_text(input)
             self.output_signal.emit(output)
 
-            talk(output)
+            talk(input)
 
 
 class MainWindow(QWidget):
@@ -112,10 +113,10 @@ class MainWindow(QWidget):
         if not self.conversation_thread.isRunning():
             self.conversation_thread.start()
             
+            
     def on_button_stop_clicked(self):
         self.textBoxInput.setText(self.textBoxInput.toPlainText() + "\n\nConversation ended, I have stopped listening.\n\n")
-        if self.conversation_thread.isRunning():
-            self.conversation_thread.terminate()
+        running = False 
 
 
 if __name__ == '__main__':

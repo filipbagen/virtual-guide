@@ -10,5 +10,4 @@ def talk(text):
 
     path = os.path.abspath("output.wav")
     playsound(path)
-
-
+    os.remove('output.wav')
