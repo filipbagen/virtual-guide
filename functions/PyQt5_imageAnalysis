@@ -1,0 +1,70 @@
+from PyQt5.Qt import QColor
+from PyQt5.QtWidgets import QApplication, QWidget
+from PyQt5.QtGui import QPainter, QBrush, QPen
+from PyQt5.QtCore import Qt, QTimer
+import cv2
+
+face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+cap = cv2.VideoCapture(0)
+
+def get_head_position():
+    # Read a frame from the camera
+    ret, frame = cap.read()
+
+    # Flip the frame horizontally
+    frame = cv2.flip(frame, 1)
+
+    # Convert the frame to grayscale for face detection
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+    # Detect faces in the grayscale image
+    faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+
+    # Draw a rectangle around each detected face and print its position
+    for (x, y, w, h) in faces:
+        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        # print("Face position: x = %d, y = %d" % (x, y))
+        return x, y
+
+    # Return 0, 0 if no faces are detected
+    return 0, 0
+
+
+class MainWindow(QWidget):
+    def __init__(self, parent=None):
+        super(MainWindow, self).__init__(parent)
+        self.resize(1200, 1200)
+        #self.head_x = 600
+        #self.head_y = 600
+        self.head_x = self.width() // 2
+        self.head_y = self.height() // 2
+
+
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing, True)
+        painter.setPen(QPen(Qt.black, 12, Qt.SolidLine))
+        painter.setBrush(QBrush(Qt.blue, Qt.SolidPattern))
+        painter.drawEllipse(self.head_x, self.head_y, 200, 200) 
+
+    def update_head_position(self):
+        self.head_x, self.head_y = get_head_position() # Updated to match the position of the face
+        self.update()                                  # Update the widget's painting areaa
+
+
+def main():
+    import sys
+    app = QApplication(sys.argv)    # initializes the application 
+    window = MainWindow()           # Calls main window 
+    window.show()                   # Display MainWindow 
+
+    # Start a timer to update head position periodically
+    timer = QTimer()
+    timer.timeout.connect(window.update_head_position)
+    timer.start(50)  # Update every 50ms
+
+    sys.exit(app.exec_())       # The program exits when the user closes the window or the app.exec_() method returns.
+
+if __name__ == "__main__":
+    main()
