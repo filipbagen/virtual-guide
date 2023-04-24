@@ -9,9 +9,11 @@ from PyQt5.QtWidgets import (
     QHBoxLayout
 )
 from PyQt5.QtCore import Qt, QThread, pyqtSignal, pyqtSlot
-from speech_recognition import speech_rec
+from speechrec import speech_rec
 from chat_bot import generate_text
 from text_to_speech import talk
+import speech_recognition as sr
+
 
 
 class ConversationThread(QThread):
@@ -20,21 +22,63 @@ class ConversationThread(QThread):
     update_gui_signal = pyqtSignal(str)
 
     def run(self):
+        r = sr.Recognizer()
+
         while True:
-            input_text = speech_rec()
-            self.update_gui_signal.emit(input_text)
-            output_text = generate_text(input_text)
-            self.update_gui_signal.emit(output_text)
-            talk(output_text)
+            # Wait for user to say something
+            with sr.Microphone() as source:
+                audio = r.listen(source)
+
+            try:
+                # Transcribe user's speech to text
+                input_text = r.recognize_google(audio)
+                self.update_gui_signal.emit(input_text)
+
+                # Check if user said "hello" to start conversation
+                if "hello" or "hey" or "hi" in input_text.lower():
+                    # Greet user and start conversation
+                    output_text = "Hello, I'm your Virtual Guide. How can I help you today?"
+                    self.update_gui_signal.emit(output_text)
+                    talk(output_text)
+
+                    # Continue conversation loop
+                    while True:
+                        with sr.Microphone() as source:
+                            audio = r.listen(source)
+
+                        input_text = speech_rec()
+                        self.update_gui_signal.emit(input_text)
+                        output_text = generate_text(input_text)
+                        self.update_gui_signal.emit(output_text)
+                        talk(output_text)
+
+                # If user didn't say "hello", prompt them to do so
+                else:
+                    output_text = "Please say 'hello' to start the conversation."
+                    self.update_gui_signal.emit(output_text)
+
+            except sr.UnknownValueError:
+                # Handle speech recognition errors
+                output_text = "Sorry, I didn't understand what you said."
+                self.update_gui_signal.emit(output_text)
+            except sr.RequestError:
+                # Handle speech recognition errors
+                output_text = "Sorry, there was an error processing your request."
+                self.update_gui_signal.emit(output_text)
 
 
 class MainWindow(QWidget):
+
+    hello_signal = pyqtSignal()
+
     def __init__(self):
         super().__init__()
 
         self.setWindowTitle("VIRTUAL GUIDE")
         self.setStyleSheet("background-color: #DEDEDE;")
         
+        self.hello_signal.connect(self.on_hello)
+
         vbox = QVBoxLayout(self)
         hbox = QHBoxLayout()
 
@@ -118,6 +162,19 @@ class MainWindow(QWidget):
         self.textEditInput.setText(self.textEditInput.toPlainText() + "\n\nConversation started, I'm listening..\n\n")
         if not self.conversation_thread.isRunning():
             self.conversation_thread.start()
+
+    def on_hello(self):
+        self.textEditInput.setText(self.textEditInput.toPlainText() + "\n\nHello, starting conversation..\n\n")
+        if not self.conversation_thread.isRunning():
+            self.conversation_thread.start()
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Return:
+            input_text = self.textEditInput.toPlainText().strip()
+            self.conversation_thread.input_signal.emit(input_text)
+            self.textEditInput.setText(self.textEditInput.toPlainText() + "\nYou: " + input_text + "\n")
+        elif event.key() == Qt.Key_H and event.modifiers() == Qt.ControlModifier:
+            self.hello_signal.emit()
     
     @pyqtSlot(str)
     def update_text(self, text):
