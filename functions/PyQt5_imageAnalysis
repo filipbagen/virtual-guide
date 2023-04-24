@@ -50,7 +50,7 @@ class MainWindow(QWidget):
 
     def update_head_position(self):
         self.head_x, self.head_y = get_head_position() # Updated to match the position of the face
-        self.update()                                  # Update the widget's painting area
+        self.update()                                  # Update the widget's painting areaa
 
 
 def main():
