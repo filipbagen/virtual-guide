@@ -3,3 +3,4 @@ results/pytorch_model.bin
 results/config.json
 results/generation_config.json
 results/training_args.bin
+models/ggml-gpt4all-j-v1.3-groovy.bin
