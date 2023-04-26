@@ -26,31 +26,77 @@ def get_head_position():
         # print("Face position: x = %d, y = %d" % (x, y))
         return x, y
 
-    # Return 0, 0 if no faces are detected
-    return 0, 0
+    # Return the last current position of head, if no faces are detected
+    return get_head_position()
 
 
 class MainWindow(QWidget):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
-        self.resize(1200, 1200)
-        #self.head_x = 600
-        #self.head_y = 600
-        self.head_x = self.width() // 2
-        self.head_y = self.height() // 2
+        self.resize(900, 900)
 
+
+        # Pupils 
+        self.head_size = 70
+        self.head_x = (self.width() - self.head_size) // 2
+        self.head_y = (self.height() - self.head_size) // 2
+        
+        # Eyes
+        self.Eyes_size = 200
+        self.Eyes_x = (self.width() - self.Eyes_size) // 4
+        self.Eyes_y = (self.height() - self.Eyes_size) // 4
+        
+        self.setStyleSheet("background-color: black;")
+        self.update_head_position() # Update head position before showing the window
 
 
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing, True)
         painter.setPen(QPen(Qt.black, 12, Qt.SolidLine))
-        painter.setBrush(QBrush(Qt.blue, Qt.SolidPattern))
-        painter.drawEllipse(self.head_x, self.head_y, 200, 200) 
+
+        # Eyes
+        painter.setBrush(QBrush(QColor(135, 206, 250), Qt.SolidPattern)) # orange color
+        painter.drawEllipse(self.Eyes_x, self.Eyes_y, self.Eyes_size, self.Eyes_size)
+        painter.drawEllipse(self.Eyes_x + self.Eyes_size + 50, self.Eyes_y, self.Eyes_size, self.Eyes_size)
+
+        # Pupils
+        painter.setBrush(QBrush(QColor(139, 69, 19), Qt.SolidPattern))
+        painter.drawEllipse(self.head_x, self.head_y, self.head_size, self.head_size)
+        painter.drawEllipse(self.head_x + self.head_size + 150, self.head_y, self.head_size, self.head_size)
+
 
     def update_head_position(self):
         self.head_x, self.head_y = get_head_position() # Updated to match the position of the face
-        self.update()                                  # Update the widget's painting areaa
+
+        # Calculate the maximum and minimum values for the x and y coordinates
+        x_min = self.Eyes_x + self.head_size // 2
+        x_max = self.Eyes_x + self.Eyes_size - self.head_size // 2
+        y_min = self.Eyes_y + self.head_size // 2
+        y_max = self.Eyes_y + self.Eyes_size - self.head_size // 2
+
+        # Update the head position
+        self.head_x = max(min(self.head_x, x_max), x_min)
+        self.head_y = max(min(self.head_y, y_max), y_min)
+
+        # Update the pupils' positions
+        pupil_offset = self.head_size // 2
+        pupil_x = self.head_x + pupil_offset
+        pupil_y = self.head_y + pupil_offset
+        if pupil_x + pupil_offset > self.Eyes_x + self.Eyes_size:
+            pupil_x = self.Eyes_x + self.Eyes_size - pupil_offset
+        elif pupil_x - pupil_offset < self.Eyes_x:
+            pupil_x = self.Eyes_x + pupil_offset
+        if pupil_y + pupil_offset > self.Eyes_y + self.Eyes_size:
+            pupil_y = self.Eyes_y + self.Eyes_size - pupil_offset
+        elif pupil_y - pupil_offset < self.Eyes_y:
+            pupil_y = self.Eyes_y + pupil_offset
+
+        # Update the pupils' positions in the object
+        self.head_x = pupil_x - pupil_offset
+        self.head_y = pupil_y - pupil_offset
+
+        self.update()
 
 
 def main():
@@ -67,4 +113,4 @@ def main():
     sys.exit(app.exec_())       # The program exits when the user closes the window or the app.exec_() method returns.
 
 if __name__ == "__main__":
-    main()
+   main()
