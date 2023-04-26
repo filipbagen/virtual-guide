@@ -7,7 +7,7 @@ import os
 
 def speech_rec():
     sr = 44100
-    seconds = 3
+    seconds = 1
     print('Recording\n')
     record_voice = sounddevice.rec(sr * seconds, samplerate=sr, channels=1)
     sounddevice.wait()

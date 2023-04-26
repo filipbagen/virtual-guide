@@ -1,22 +1,40 @@
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import (
+import cv2
+from PyQt6.QtGui import (
+    QPixmap, 
+    QTextCursor, 
+    QTextCharFormat, 
+    QColor
+) 
+from PyQt6.QtWidgets import (
     QApplication,
     QWidget,
     QLabel,
     QTextEdit,
     QPushButton,
     QVBoxLayout,
-    QHBoxLayout
+    QHBoxLayout,
+    QPlainTextEdit,
+    QSizePolicy
 )
-from PyQt5.QtCore import Qt, QThread, pyqtSignal, pyqtSlot
+from PyQt6.QtCore import (
+    QPropertyAnimation, 
+    QSequentialAnimationGroup, 
+    QPoint, 
+    QSize, 
+    Qt,
+    QThread, 
+    pyqtSignal, 
+    pyqtSlot
+)
+
 from speech_recognition import speech_rec
 from chat_bot import generate_text
 from text_to_speech import talk
+# from ImageAnlysis import VideoWidget
 
+counter = 0
 
 class ConversationThread(QThread):
-    input_signal = pyqtSignal(str)
-    output_signal = pyqtSignal(str)
     update_gui_signal = pyqtSignal(str)
 
     def run(self):
@@ -26,115 +44,125 @@ class ConversationThread(QThread):
             output_text = generate_text(input_text)
             self.update_gui_signal.emit(output_text)
             talk(output_text)
+    
 
 
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
+    
+        self.setWindowTitle("Virtual Guide")
+        self.setStyleSheet(
+            """
+                background-color: #4d4f5c;
+            """)
 
-        self.setWindowTitle("VIRTUAL GUIDE")
-        self.setStyleSheet("background-color: #DEDEDE;")
-        
-        vbox = QVBoxLayout(self)
-        hbox = QHBoxLayout()
-
-        label = QLabel(
-            "Hello, I'm your Virtual Guide. Say Hi or click the button to start the conversation."
-        )
+        label = QLabel("Hello, I'm your Virtual Guide.")
         label.setStyleSheet(
-            "color: black; font-size: 25px; font-weight: bold; font-family: Helvetica;"
-        )
-        label.setFixedWidth(1000)
-        label.setAlignment(Qt.AlignCenter)
-        
+            """
+                color: #DEDEDE;
+                font-size: 25px;
+                font-family: Helvetica;
+                font-weight: bold;
+                text-align: center;
+            """)
+
+        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        label.setGeometry(0, 0, self.width(), self.height())
+
         self.textEditInput = QTextEdit()
         self.textEditInput.setReadOnly(True)
+        self.textEditInput.setMinimumSize(500, 500)
         self.textEditInput.setStyleSheet(
             """
-            QTextEdit {
-                background-color: #DEDEDE;
-                border: 1px solid #DEDEDE;
-                color: black;
-                font-size: 20px;
-                font-weight: bold;
-                font-family: Helvetica;
-            }
-        """
-        )
+                QTextEdit {
+                    background-color: white;
+                    border-radius: 10px;
+                    font-family: Helvetica;
+                }
+            """)
 
-        buttonStart = QPushButton("START CONVERSATION")
-        buttonStart.setFixedWidth(200)
-        buttonStart.clicked.connect(self.on_button_start_clicked)
-        buttonStart.setStyleSheet(
-            """
-            QPushButton {
-                color: #fff;
-                background-color: #0d6efd;
-                border-color: #0d6efd;
-                font-weight: 400;
-                line-height: 1.5;
-                text-align: center;
-                border: 1px solid transparent;
-                padding: 12px;
-                font-size: 16px;
-                border-radius: .25rem;
-            }
-        """
-        )
+        placeholderbot = QLabel("hej")
+        placeholderbot.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        placeholderbot.setMinimumSize(500, 500)
+        placeholderbot.setStyleSheet("""
+                background-color: white;
+                border-radius: 10px;
+            """)
 
-        buttonStop = QPushButton("KILL PROGRAM")
-        buttonStop.setFixedWidth(200)
-        buttonStop.clicked.connect(self.on_button_stop_clicked)
-        buttonStop.setStyleSheet(
-            """
-            QPushButton {
-                color: #fff;
-                background-color: #dc3545;
-                border-color: #dc3545;
-                font-weight: 400;
-                line-height: 1.5;
-                text-align: center;
-                border: 1px solid transparent;
-                padding: 12px;
-                font-size: 16px;
-                border-radius: .25rem;
-
-            }
-        """
-        )
-
-        vbox.addWidget(label)
-        
-        vbox.addWidget(self.textEditInput)
-        
-        hbox.addWidget(buttonStart)
-        hbox.addWidget(buttonStop)
-        vbox.addLayout(hbox)
+        appContainer = QHBoxLayout(self)
+        botContainer = QVBoxLayout(self)
+        chatContainer = QVBoxLayout(self)
+        buttonContainer = QHBoxLayout()
+        chatContainer.addWidget(self.textEditInput)        
+        buttonContainer.addWidget(self.buttonStart())
+        buttonContainer.addWidget(self.buttonStop())
+        botContainer.addWidget(label)
+        botContainer.addWidget(placeholderbot)
+        botContainer.addLayout(buttonContainer)
+        appContainer.addLayout(botContainer)
+        appContainer.addLayout(chatContainer)
 
         self.conversation_thread = ConversationThread()
         self.conversation_thread.update_gui_signal.connect(self.set_text)
         
+    def set_text(self, text):
+        global counter
+        
+        if (counter % 2) == 0:
+            self.textEditInput.insertHtml("<div style='font-size: 20px; color: white; background-color: #1e90ff; padding: 20px; vertical-align:middle; '>{}</div><br />".format(text))
+        else: 
+            self.textEditInput.insertHtml("<div style='font-size: 20px; color: black; background-color: white; padding: 20px; vertical-align:middle; '>{}</div><br />".format(text))
+        counter += 1
+
+    def buttonStop(self):
+        button = QPushButton("KILL ME", self)
+        button.setFixedSize(250, 50)
+        button.clicked.connect(QApplication.quit)
+        button.setStyleSheet("""
+            QPushButton {
+                background-color: #1e90ff;
+                color: white;
+                font-family: Helvetica;
+                border-radius : 10;
+                border : 5px solid #1e90ff;
+                font-weight: bold;
+                padding: 10px;
+            }
+            QPushButton:hover {
+                text-decoration: underline;
+            }
+        """)
+
+        return button
+
+    def buttonStart(self):
+        button = QPushButton("START CONVERSATION", self)
+        button.setFixedSize(250, 50)
+        button.clicked.connect(self.on_button_start_clicked)
+        button.setStyleSheet(""" 
+            QPushButton {
+                background-color: #1e90ff;
+                color: white; 
+                font-family: Helvetica;
+                border-radius : 10; 
+                border : 5px solid #1e90ff;
+                font-weight: bold;
+                padding: 10px;
+            }
+            QPushButton:hover {
+                text-decoration: underline;
+            } 
+        """)
+        return button
+
     def on_button_start_clicked(self):
-        self.textEditInput.setText(self.textEditInput.toPlainText() + "\n\nConversation started, I'm listening..\n\n")
+        self.textEditInput.insertHtml("<div style='font-size: 20px; color: white; background-color: #1e90ff; padding: 20px; vertical-align: middle;'>{}</div><br />".format("I am listening..."))
         if not self.conversation_thread.isRunning():
             self.conversation_thread.start()
-    
-    @pyqtSlot(str)
-    def update_text(self, text):
-        self.textEditInput.append(text)
-        
-    def on_button_stop_clicked(self):
-        self.textEditInput.setText(self.textEditInput.toPlainText() + "\n\nConversation ended, closing down.\n\n")
-        QApplication.quit()
-    
-    def set_text(self, text):
-        self.textEditInput.append(text)
-
 
 if __name__ == '__main__':
     app = QApplication([])
     window = MainWindow()
     window.show()
-    app.exec_()
-
-
+    app.exec()
