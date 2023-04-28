@@ -32,15 +32,9 @@ from PyQt6.QtCore import Qt, QTimer
 from speechrec import speech_rec
 from T5 import get_answer
 from text_to_speech import talk
-
-# from eye import MainWindow
-
 import speech_recognition as sr
 
-
-
 counter = 0
-context = "The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly."
 
 class ConversationThread(QThread):
     update_gui_signal = pyqtSignal(str)
@@ -62,12 +56,9 @@ class ConversationThread(QThread):
                     talk(output_text)
                   
                     while True:
-                        with sr.Microphone() as source:
-                            audio = r.listen(source)
-
                         input_text = speech_rec()
                         self.update_gui_signal.emit(input_text)
-                        output_text = get_answer(input_text, context)
+                        output_text = get_answer(input_text)
                         self.update_gui_signal.emit(output_text)
                         talk(output_text)
                         

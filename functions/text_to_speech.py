@@ -13,7 +13,6 @@ def talk(text):
 
     CHUNK = 1024
 
-    # write the audio data to a temporary file
     with io.BytesIO() as f:
         wf = wave.open(f, 'wb')
         wf.setnchannels(1)
@@ -22,7 +21,6 @@ def talk(text):
         wf.writeframes(scaled_samples.tobytes())
         wf.close()
 
-        # read the audio data from the temporary file
         f.seek(0)
         wf = wave.open(f, 'rb')
 
