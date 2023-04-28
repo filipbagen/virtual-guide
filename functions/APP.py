@@ -50,8 +50,8 @@ class ConversationThread(QThread):
                 input_text = r.recognize_google(audio)
                 self.update_gui_signal.emit(input_text)
 
-                if "hello" or "hey" or "hi" in input_text.lower():
-                    output_text = "Hello, I'm your Virtual Guide. How can I help you today?"
+                if "Tina" or "Tyna" or "Tuna" or "Tiinnaa" in input_text.lower():
+                    output_text = "Hello, I am Tina. How can I help you today?"
                     self.update_gui_signal.emit(output_text)
                     talk(output_text)
                   
