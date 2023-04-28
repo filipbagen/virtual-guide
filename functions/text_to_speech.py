@@ -4,7 +4,7 @@ import os
 
 
 def talk(text):
-    tts = TTS("tts_models/sv/cv/vits")
+    tts = TTS("tts_models/en/ljspeech/vits")
 
     tts.tts_to_file(text)
 
