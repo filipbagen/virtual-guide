@@ -29,12 +29,10 @@ from PyQt6.QtCore import (
 )
 from PyQt6.QtGui import QColor, QPainter, QBrush, QPen
 from PyQt6.QtCore import Qt, QTimer
-
 from speechrec import speech_rec
 from T5 import get_answer
 from text_to_speech import talk
 import speech_recognition as sr
-
 from eye import HeadWidget
 
 counter = 0
@@ -131,7 +129,6 @@ class MainWindow(QWidget):
         botContainer.addWidget(label)
         
         widget = HeadWidget()
-        # widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         botContainer.addWidget(widget)
         
         botContainer.addLayout(buttonContainer)
