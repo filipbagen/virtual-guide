@@ -26,12 +26,18 @@ from PyQt6.QtCore import (
     pyqtSignal, 
     pyqtSlot
 )
+from PyQt6.QtGui import QColor, QPainter, QBrush, QPen
+from PyQt6.QtCore import Qt, QTimer
 
-from speech_recognition import speech_rec
-# from chat_bot import generate_text
+from speechrec import speech_rec
 from T5 import get_answer
 from text_to_speech import talk
-# from ImageAnlysis import VideoWidget
+
+# from eye import MainWindow
+
+import speech_recognition as sr
+
+
 
 counter = 0
 context = "The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly."
@@ -39,13 +45,42 @@ context = "The following is a conversation with an AI assistant. The assistant i
 class ConversationThread(QThread):
     update_gui_signal = pyqtSignal(str)
 
-    def run(self):
+    def run(self):    
+        r = sr.Recognizer()
+
         while True:
-            input_text = speech_rec()
-            self.update_gui_signal.emit(input_text)
-            output_text = get_answer(input_text, context)
-            self.update_gui_signal.emit(output_text)
-            talk(output_text)
+            with sr.Microphone() as source:
+                audio = r.listen(source)
+
+            try:
+                input_text = r.recognize_google(audio)
+                self.update_gui_signal.emit(input_text)
+
+                if "hello" or "hey" or "hi" in input_text.lower():
+                    output_text = "Hello, I'm your Virtual Guide. How can I help you today?"
+                    self.update_gui_signal.emit(output_text)
+                    talk(output_text)
+                  
+                    while True:
+                        with sr.Microphone() as source:
+                            audio = r.listen(source)
+
+                        input_text = speech_rec()
+                        self.update_gui_signal.emit(input_text)
+                        output_text = get_answer(input_text, context)
+                        self.update_gui_signal.emit(output_text)
+                        talk(output_text)
+                        
+                else:
+                    output_text = "Please say 'hello' to start the conversation."
+                    self.update_gui_signal.emit(output_text)
+
+            except sr.UnknownValueError:
+                output_text = "Sorry, I didn't understand what you said."
+                self.update_gui_signal.emit(output_text)
+            except sr.RequestError:
+                output_text = "Sorry, there was an error processing your request."
+                self.update_gui_signal.emit(output_text)
     
 class MainWindow(QWidget):
     def __init__(self):
@@ -137,7 +172,7 @@ class MainWindow(QWidget):
         return button
 
     def buttonStart(self):
-        button = QPushButton("START CONVERSATION", self)
+        button = QPushButton("START LISTENING", self)
         button.setFixedSize(250, 50)
         button.clicked.connect(self.on_button_start_clicked)
         button.setStyleSheet(""" 
@@ -158,6 +193,11 @@ class MainWindow(QWidget):
 
     def on_button_start_clicked(self):
         self.textEditInput.insertHtml("<div style='font-size: 20px; color: white; background-color: #1e90ff; padding: 20px; vertical-align: middle;'>{}</div><br />".format("I am listening..."))
+        if not self.conversation_thread.isRunning():
+            self.conversation_thread.start()
+            
+    def on_hello(self):
+        self.textEditInput.setText(self.textEditInput.toPlainText() + "\n\nHello, starting conversation..\n\n")
         if not self.conversation_thread.isRunning():
             self.conversation_thread.start()
 

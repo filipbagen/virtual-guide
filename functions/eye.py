@@ -1,85 +1,76 @@
-from PyQt5.Qt import QColor
-from PyQt5.QtWidgets import QApplication, QWidget
-from PyQt5.QtGui import QPainter, QBrush, QPen
-from PyQt5.QtCore import Qt, QTimer
+from PyQt6.QtGui import QColor, QPainter, QBrush, QPen
+from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtWidgets import QApplication, QWidget
+from PyQt6.QtCore import Qt, QRect
 import cv2
+import sys 
 
 face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 cap = cv2.VideoCapture(0)
 
 def get_head_position():
-    # Read a frame from the camera
     ret, frame = cap.read()
 
-    # Flip the frame horizontally
     frame = cv2.flip(frame, 1)
 
-    # Convert the frame to grayscale for face detection
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    # Detect faces in the grayscale image
     faces = face_cascade.detectMultiScale(gray, 1.3, 5)
 
-    # Draw a rectangle around each detected face and print its position
     for (x, y, w, h) in faces:
         cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
         # print("Face position: x = %d, y = %d" % (x, y))
         return x, y
 
-    # Return the last current position of head, if no faces are detected
     return get_head_position()
 
 
-class MainWindow(QWidget):
+class MovingHeadWidget(QWidget):
     def __init__(self, parent=None):
-        super(MainWindow, self).__init__(parent)
+        super().__init__(parent)
+
         self.resize(900, 900)
 
-
-        # Pupils 
         self.head_size = 70
         self.head_x = (self.width() - self.head_size) // 2
         self.head_y = (self.height() - self.head_size) // 2
-        
-        # Eyes
+
         self.Eyes_size = 200
         self.Eyes_x = (self.width() - self.Eyes_size) // 4
         self.Eyes_y = (self.height() - self.Eyes_size) // 4
-        
-        self.setStyleSheet("background-color: black;")
-        self.update_head_position() # Update head position before showing the window
 
+        self.setStyleSheet("background-color: black;")
+        self.update_head_position()
+
+        timer = QTimer(self)
+        timer.timeout.connect(self.update_head_position)
+        timer.start(50)
 
     def paintEvent(self, event):
         painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing, True)
-        painter.setPen(QPen(Qt.black, 12, Qt.SolidLine))
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
+        painter.setPen(QPen(QColor(0, 0, 0), 12, Qt.PenStyle.SolidLine))
 
-        # Eyes
-        painter.setBrush(QBrush(QColor(135, 206, 250), Qt.SolidPattern)) # orange color
-        painter.drawEllipse(self.Eyes_x, self.Eyes_y, self.Eyes_size, self.Eyes_size)
-        painter.drawEllipse(self.Eyes_x + self.Eyes_size + 50, self.Eyes_y, self.Eyes_size, self.Eyes_size)
+        painter.setBrush(QBrush(QColor(135, 206, 250), Qt.BrushStyle.SolidPattern)) # orange color
+        painter.drawEllipse(QRect(self.Eyes_x, self.Eyes_y, self.Eyes_size, self.Eyes_size))
+        painter.drawEllipse(QRect(self.Eyes_x + self.Eyes_size + 50, self.Eyes_y, self.Eyes_size, self.Eyes_size))
 
-        # Pupils
-        painter.setBrush(QBrush(QColor(139, 69, 19), Qt.SolidPattern))
-        painter.drawEllipse(self.head_x, self.head_y, self.head_size, self.head_size)
-        painter.drawEllipse(self.head_x + self.head_size + 150, self.head_y, self.head_size, self.head_size)
+        painter.setBrush(QBrush(QColor(139, 69, 19), Qt.BrushStyle.SolidPattern))
+        painter.drawEllipse(QRect(self.head_x, self.head_y, self.head_size, self.head_size))
+        painter.drawEllipse(QRect(self.head_x + self.head_size + 150, self.head_y, self.head_size, self.head_size))
 
 
     def update_head_position(self):
         self.head_x, self.head_y = get_head_position() # Updated to match the position of the face
 
-        # Calculate the maximum and minimum values for the x and y coordinates
         x_min = self.Eyes_x + self.head_size // 2
         x_max = self.Eyes_x + self.Eyes_size - self.head_size // 2
         y_min = self.Eyes_y + self.head_size // 2
         y_max = self.Eyes_y + self.Eyes_size - self.head_size // 2
 
-        # Update the head position
         self.head_x = max(min(self.head_x, x_max), x_min)
         self.head_y = max(min(self.head_y, y_max), y_min)
 
-        # Update the pupils' positions
         pupil_offset = self.head_size // 2
         pupil_x = self.head_x + pupil_offset
         pupil_y = self.head_y + pupil_offset
@@ -92,25 +83,7 @@ class MainWindow(QWidget):
         elif pupil_y - pupil_offset < self.Eyes_y:
             pupil_y = self.Eyes_y + pupil_offset
 
-        # Update the pupils' positions in the object
         self.head_x = pupil_x - pupil_offset
         self.head_y = pupil_y - pupil_offset
 
         self.update()
-
-
-def main():
-    import sys
-    app = QApplication(sys.argv)    # initializes the application 
-    window = MainWindow()           # Calls main window 
-    window.show()                   # Display MainWindow 
-
-    # Start a timer to update head position periodically
-    timer = QTimer()
-    timer.timeout.connect(window.update_head_position)
-    timer.start(50)  # Update every 50ms
-
-    sys.exit(app.exec_())       # The program exits when the user closes the window or the app.exec_() method returns.
-
-if __name__ == "__main__":
-   main()

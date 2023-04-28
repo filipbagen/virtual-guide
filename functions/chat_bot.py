@@ -15,7 +15,6 @@ tokenizer = AutoTokenizer.from_pretrained(model_name, use_auth_token=True)
 # Set the period/full stop as the stop token
 tokenizer.pad_token = "."
 
-
 model = AutoModelForCausalLM.from_pretrained(model_name)
 model.eval()
 model.to(device)
