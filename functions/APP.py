@@ -5,6 +5,7 @@ from PyQt6.QtGui import (
     QTextCharFormat, 
     QColor
 ) 
+from PyQt6 import QtWidgets
 from PyQt6.QtWidgets import (
     QApplication,
     QWidget,
@@ -33,6 +34,8 @@ from speechrec import speech_rec
 from T5 import get_answer
 from text_to_speech import talk
 import speech_recognition as sr
+
+from eye import HeadWidget
 
 counter = 0
 
@@ -72,11 +75,11 @@ class ConversationThread(QThread):
             except sr.RequestError:
                 output_text = "Sorry, there was an error processing your request."
                 self.update_gui_signal.emit(output_text)
-    
+
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
-    
+        
         self.setWindowTitle("Virtual Guide")
         self.setStyleSheet(
             """
@@ -115,16 +118,22 @@ class MainWindow(QWidget):
                 background-color: white;
                 border-radius: 10px;
             """)
-
+         
         appContainer = QHBoxLayout(self)
-        botContainer = QVBoxLayout(self)
         chatContainer = QVBoxLayout(self)
+        
+        botContainer = QVBoxLayout(self)
+        
         buttonContainer = QHBoxLayout()
         chatContainer.addWidget(self.textEditInput)        
         buttonContainer.addWidget(self.buttonStart())
         buttonContainer.addWidget(self.buttonStop())
         botContainer.addWidget(label)
-        botContainer.addWidget(placeholderbot)
+        
+        widget = HeadWidget()
+        # widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        botContainer.addWidget(widget)
+        
         botContainer.addLayout(buttonContainer)
         appContainer.addLayout(botContainer)
         appContainer.addLayout(chatContainer)

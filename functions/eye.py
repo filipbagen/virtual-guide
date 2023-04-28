@@ -1,35 +1,15 @@
 from PyQt6.QtGui import QColor, QPainter, QBrush, QPen
-from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtCore import Qt, QTimer, QRect
 from PyQt6.QtWidgets import QApplication, QWidget
-from PyQt6.QtCore import Qt, QRect
 import cv2
-import sys 
+import sys
 
-face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-cap = cv2.VideoCapture(0)
-
-def get_head_position():
-    ret, frame = cap.read()
-
-    frame = cv2.flip(frame, 1)
-
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-    faces = face_cascade.detectMultiScale(gray, 1.3, 5)
-
-    for (x, y, w, h) in faces:
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        # print("Face position: x = %d, y = %d" % (x, y))
-        return x, y
-
-    return get_head_position()
-
-
-class MovingHeadWidget(QWidget):
+class HeadWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.resize(900, 900)
+        self.face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+        self.cap = cv2.VideoCapture(0)
 
         self.head_size = 70
         self.head_x = (self.width() - self.head_size) // 2
@@ -51,7 +31,7 @@ class MovingHeadWidget(QWidget):
         painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
         painter.setPen(QPen(QColor(0, 0, 0), 12, Qt.PenStyle.SolidLine))
 
-        painter.setBrush(QBrush(QColor(135, 206, 250), Qt.BrushStyle.SolidPattern)) # orange color
+        painter.setBrush(QBrush(QColor(135, 206, 250), Qt.BrushStyle.SolidPattern))
         painter.drawEllipse(QRect(self.Eyes_x, self.Eyes_y, self.Eyes_size, self.Eyes_size))
         painter.drawEllipse(QRect(self.Eyes_x + self.Eyes_size + 50, self.Eyes_y, self.Eyes_size, self.Eyes_size))
 
@@ -59,9 +39,19 @@ class MovingHeadWidget(QWidget):
         painter.drawEllipse(QRect(self.head_x, self.head_y, self.head_size, self.head_size))
         painter.drawEllipse(QRect(self.head_x + self.head_size + 150, self.head_y, self.head_size, self.head_size))
 
+    def get_head_position(self):
+        ret, frame = self.cap.read()
+        frame = cv2.flip(frame, 1)
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        faces = self.face_cascade.detectMultiScale(gray, 1.3, 5)
+
+        for (x, y, w, h) in faces:
+            return x, y
+
+        return self.get_head_position()
 
     def update_head_position(self):
-        self.head_x, self.head_y = get_head_position() # Updated to match the position of the face
+        self.head_x, self.head_y = self.get_head_position()
 
         x_min = self.Eyes_x + self.head_size // 2
         x_max = self.Eyes_x + self.Eyes_size - self.head_size // 2
@@ -87,3 +77,6 @@ class MovingHeadWidget(QWidget):
         self.head_y = pupil_y - pupil_offset
 
         self.update()
+        
+   
+
