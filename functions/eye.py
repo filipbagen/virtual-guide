@@ -12,12 +12,12 @@ class HeadWidget(QWidget):
         self.cap = cv2.VideoCapture(0)
 
         self.head_size = 70
-        self.head_x = (self.width() - self.head_size) // 2
-        self.head_y = (self.height() - self.head_size) // 2
+        self.head_x = (self.width() - self.head_size) // 4
+        self.head_y = (self.height() - self.head_size) // 4
 
         self.Eyes_size = 200
-        self.Eyes_x = (self.width() - self.Eyes_size) // 2
-        self.Eyes_y = (self.height() - self.Eyes_size) // 2
+        self.Eyes_x = (self.width() - self.Eyes_size) // 5
+        self.Eyes_y = (self.height() - self.Eyes_size) // 5
 
         self.setStyleSheet("background-color: black;")
         self.update_head_position()

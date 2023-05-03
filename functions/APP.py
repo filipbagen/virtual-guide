@@ -62,8 +62,6 @@ class ConversationThread(QThread):
                         output_text = get_answer(input_text)
                         self.update_gui_signal.emit(output_text)
                         talk(output_text)
-                            
-                        
                 else:
                     output_text = "Say my name to start the conversation."
                     self.update_gui_signal.emit(output_text)
