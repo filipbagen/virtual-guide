@@ -31,11 +31,11 @@ class HeadWidget(QWidget):
         painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
         painter.setPen(QPen(QColor(0, 0, 0), 12, Qt.PenStyle.SolidLine))
 
-        painter.setBrush(QBrush(QColor(135, 206, 250), Qt.BrushStyle.SolidPattern))
+        painter.setBrush(QBrush(QColor(30, 144, 255), Qt.BrushStyle.SolidPattern))
         painter.drawEllipse(QRect(self.Eyes_x, self.Eyes_y, self.Eyes_size, self.Eyes_size))
         painter.drawEllipse(QRect(self.Eyes_x + self.Eyes_size + 50, self.Eyes_y, self.Eyes_size, self.Eyes_size))
 
-        painter.setBrush(QBrush(QColor(139, 69, 19), Qt.BrushStyle.SolidPattern))
+        painter.setBrush(QBrush(QColor(255, 255, 255), Qt.BrushStyle.SolidPattern))
         painter.drawEllipse(QRect(self.head_x, self.head_y, self.head_size, self.head_size))
         painter.drawEllipse(QRect(self.head_x + self.head_size + 150, self.head_y, self.head_size, self.head_size))
 

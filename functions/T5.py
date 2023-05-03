@@ -7,7 +7,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = model.to(device)
 
 def get_answer(question):
-    context="" # Lägg till den givna kontexten här.
+    context="You are a helpful AI assistant for museums. You live in Sweden and work at Visualiserings centret. You have been developed by a couple of university students." # Lägg till den givna kontexten här.
 
     input_text = "context: %s <question for context: %s </s>" % (context, question)
     features = tokenizer([input_text], return_tensors='pt')

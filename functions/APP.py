@@ -62,16 +62,17 @@ class ConversationThread(QThread):
                         output_text = get_answer(input_text)
                         self.update_gui_signal.emit(output_text)
                         talk(output_text)
+                            
                         
                 else:
-                    output_text = "Please say 'hello' to start the conversation."
+                    output_text = "Please say my name to start the conversation."
                     self.update_gui_signal.emit(output_text)
 
             except sr.UnknownValueError:
-                output_text = "Sorry, I didn't understand what you said."
+                output_text = "I am  listening. Say my name to start the conversation."
                 self.update_gui_signal.emit(output_text)
             except sr.RequestError:
-                output_text = "Sorry, there was an error processing your request."
+                output_text = "I am  listening. Say my name to start the conversation."
                 self.update_gui_signal.emit(output_text)
 
 class MainWindow(QWidget):
@@ -84,7 +85,7 @@ class MainWindow(QWidget):
                 background-color: #4d4f5c;
             """)
 
-        label = QLabel("Hello, I'm your Virtual Guide.")
+        label = QLabel("Hello, I am Tina. Start our conversation by saying my name.")
         label.setStyleSheet(
             """
                 color: #DEDEDE;
@@ -124,7 +125,7 @@ class MainWindow(QWidget):
         
         buttonContainer = QHBoxLayout()
         chatContainer.addWidget(self.textEditInput)        
-        buttonContainer.addWidget(self.buttonStart())
+        # buttonContainer.addWidget(self.buttonStart())
         buttonContainer.addWidget(self.buttonStop())
         botContainer.addWidget(label)
         
@@ -138,6 +139,8 @@ class MainWindow(QWidget):
         self.conversation_thread = ConversationThread()
         self.conversation_thread.update_gui_signal.connect(self.set_text)
         
+        self.conversation_thread.start()
+        
     def set_text(self, text):
         global counter
         
@@ -148,7 +151,7 @@ class MainWindow(QWidget):
         counter += 1
 
     def buttonStop(self):
-        button = QPushButton("KILL ME", self)
+        button = QPushButton("KILL TINA", self)
         button.setFixedSize(250, 50)
         button.clicked.connect(QApplication.quit)
         button.setStyleSheet("""
@@ -168,30 +171,30 @@ class MainWindow(QWidget):
 
         return button
 
-    def buttonStart(self):
-        button = QPushButton("START LISTENING", self)
-        button.setFixedSize(250, 50)
-        button.clicked.connect(self.on_button_start_clicked)
-        button.setStyleSheet(""" 
-            QPushButton {
-                background-color: #1e90ff;
-                color: white; 
-                font-family: Helvetica;
-                border-radius : 10; 
-                border : 5px solid #1e90ff;
-                font-weight: bold;
-                padding: 10px;
-            }
-            QPushButton:hover {
-                text-decoration: underline;
-            } 
-        """)
-        return button
+    # def buttonStart(self):
+    #     button = QPushButton("START LISTENING", self)
+    #     button.setFixedSize(250, 50)
+    #     button.clicked.connect(self.on_button_start_clicked)
+    #     button.setStyleSheet(""" 
+    #         QPushButton {
+    #             background-color: #1e90ff;
+    #             color: white; 
+    #             font-family: Helvetica;
+    #             border-radius : 10; 
+    #             border : 5px solid #1e90ff;
+    #             font-weight: bold;
+    #             padding: 10px;
+    #         }
+    #         QPushButton:hover {
+    #             text-decoration: underline;
+    #         } 
+    #     """)
+    #     return button
 
-    def on_button_start_clicked(self):
-        self.textEditInput.insertHtml("<div style='font-size: 20px; color: white; background-color: #1e90ff; padding: 20px; vertical-align: middle;'>{}</div><br />".format("I am listening..."))
-        if not self.conversation_thread.isRunning():
-            self.conversation_thread.start()
+    # def on_button_start_clicked(self):
+    #     self.textEditInput.insertHtml("<div style='font-size: 20px; color: white; background-color: #1e90ff; padding: 20px; vertical-align: middle;'>{}</div><br />".format("I am listening..."))
+    #     if not self.conversation_thread.isRunning():
+    #         self.conversation_thread.start()
             
     def on_hello(self):
         self.textEditInput.setText(self.textEditInput.toPlainText() + "\n\nHello, starting conversation..\n\n")
