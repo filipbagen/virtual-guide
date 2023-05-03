@@ -16,8 +16,8 @@ class HeadWidget(QWidget):
         self.head_y = (self.height() - self.head_size) // 2
 
         self.Eyes_size = 200
-        self.Eyes_x = (self.width() - self.Eyes_size) // 4
-        self.Eyes_y = (self.height() - self.Eyes_size) // 4
+        self.Eyes_x = (self.width() - self.Eyes_size) // 2
+        self.Eyes_y = (self.height() - self.Eyes_size) // 2
 
         self.setStyleSheet("background-color: black;")
         self.update_head_position()

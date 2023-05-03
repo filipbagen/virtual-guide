@@ -65,14 +65,14 @@ class ConversationThread(QThread):
                             
                         
                 else:
-                    output_text = "Please say my name to start the conversation."
+                    output_text = "Say my name to start the conversation."
                     self.update_gui_signal.emit(output_text)
 
             except sr.UnknownValueError:
-                output_text = "I am  listening. Say my name to start the conversation."
+                output_text = "Say my name to start the conversation."
                 self.update_gui_signal.emit(output_text)
             except sr.RequestError:
-                output_text = "I am  listening. Say my name to start the conversation."
+                output_text = "Say my name to start the conversation."
                 self.update_gui_signal.emit(output_text)
 
 class MainWindow(QWidget):
@@ -108,14 +108,6 @@ class MainWindow(QWidget):
                     border-radius: 10px;
                     font-family: Helvetica;
                 }
-            """)
-
-        placeholderbot = QLabel("hej")
-        placeholderbot.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        placeholderbot.setMinimumSize(500, 500)
-        placeholderbot.setStyleSheet("""
-                background-color: white;
-                border-radius: 10px;
             """)
          
         appContainer = QHBoxLayout(self)
