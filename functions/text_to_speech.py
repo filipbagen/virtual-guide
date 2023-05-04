@@ -6,6 +6,7 @@ import wave
 
 tts = TTS("tts_models/en/ljspeech/tacotron2-DDC")
 
+
 def talk(text):
     audio_samples = tts.tts(text)
     max_amplitude = np.abs(audio_samples).max()

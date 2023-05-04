@@ -5,9 +5,10 @@ import os
 
 model = whisper.load_model('base.en')
 
+
 def speech_rec():
     sr = 44100
-    seconds = 3
+    seconds = 4
     print('Recording\n')
     record_voice = sounddevice.rec(sr * seconds, samplerate=sr, channels=1)
     sounddevice.wait()
