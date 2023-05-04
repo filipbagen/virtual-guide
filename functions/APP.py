@@ -113,6 +113,9 @@ class MainWindow(QWidget):
                 }
             """)
 
+
+<< << << < HEAD
+
         placeholderbot = QLabel("hej")
         placeholderbot.setSizePolicy(
             QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
@@ -122,6 +125,9 @@ class MainWindow(QWidget):
                 border-radius: 10px;
             """)
 
+== == == =
+
+>>>>>> > 409f0f7acc092d6c161f9c884fb7e3a7f3db6201
         appContainer = QHBoxLayout(self)
         chatContainer = QVBoxLayout(self)
 
