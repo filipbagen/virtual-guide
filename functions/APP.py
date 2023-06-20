@@ -1,10 +1,5 @@
 import cv2
-from PyQt6.QtGui import (
-    QPixmap,
-    QTextCursor,
-    QTextCharFormat,
-    QColor
-)
+from PyQt6.QtGui import QPixmap, QTextCursor, QTextCharFormat, QColor
 from PyQt6 import QtWidgets
 from PyQt6.QtWidgets import (
     QApplication,
@@ -15,7 +10,7 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
     QPlainTextEdit,
-    QSizePolicy
+    QSizePolicy,
 )
 from PyQt6.QtCore import (
     QPropertyAnimation,
@@ -25,7 +20,7 @@ from PyQt6.QtCore import (
     Qt,
     QThread,
     pyqtSignal,
-    pyqtSlot
+    pyqtSlot,
 )
 from PyQt6.QtGui import QColor, QPainter, QBrush, QPen
 from PyQt6.QtCore import Qt, QTimer
@@ -45,35 +40,37 @@ class ConversationThread(QThread):
         r = sr.Recognizer()
 
         while True:
-            with sr.Microphone() as source:
-                audio = r.listen(source)
+            # with sr.Microphone() as source:
+            #     audio = r.listen(source)
 
             try:
-                input_text = r.recognize_google(audio)
-                self.update_gui_signal.emit(input_text)
+                # input_text = r.recognize_google(audio)
+                # self.update_gui_signal.emit(input_text)
 
                 # if "Tina" or "Tyna" or "Tuna" or "Tiinnaa" in input_text.lower():
-                if "hello" or "hi" or "hey" in input_text.lower():
-                    output_text = "Hello, how can I help you today?"
+                # if "hello" or "hi" or "hey" in input_text.lower():
+                output_text = "Hello, how can I help you today?"
+                self.update_gui_signal.emit(output_text)
+                talk(output_text)
+
+                while True:
+                    input_text = speech_rec()
+                    self.update_gui_signal.emit(input_text)
+                    output_text = get_answer(input_text)
                     self.update_gui_signal.emit(output_text)
                     talk(output_text)
 
-                    while True:
-                        input_text = speech_rec()
-                        self.update_gui_signal.emit(input_text)
-                        output_text = get_answer(input_text)
-                        self.update_gui_signal.emit(output_text)
-                        talk(output_text)
-
-                else:
-                    output_text = "Please say 'hello' to start the conversation."
-                    self.update_gui_signal.emit(output_text)
+                # else:
+                #     output_text = "Please say 'hello' to start the conversation."
+                #     self.update_gui_signal.emit(output_text)
 
             except sr.UnknownValueError:
                 output_text = "I am  listening. Say 'hello' to start the conversation."
                 self.update_gui_signal.emit(output_text)
             except sr.RequestError:
-                output_text = "I am  listening. Say my 'hello' to start the conversation."
+                output_text = (
+                    "I am  listening. Say my 'hello' to start the conversation."
+                )
                 self.update_gui_signal.emit(output_text)
 
 
@@ -85,10 +82,12 @@ class MainWindow(QWidget):
         self.setStyleSheet(
             """
                 background-color: #4d4f5c;
-            """)
+            """
+        )
 
         label = QLabel(
-            "Hello! I am your Virtual Guide. Start our conversation by saying 'Hi'.")
+            "Hello! I am your Virtual Guide. Start our conversation by saying 'Hi'."
+        )
         label.setStyleSheet(
             """
                 color: #DEDEDE;
@@ -96,7 +95,8 @@ class MainWindow(QWidget):
                 font-family: Helvetica;
                 font-weight: bold;
                 text-align: center;
-            """)
+            """
+        )
 
         label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         label.setGeometry(0, 0, self.width(), self.height())
@@ -111,23 +111,21 @@ class MainWindow(QWidget):
                     border-radius: 10px;
                     font-family: Helvetica;
                 }
-            """)
-
-
-<< << << < HEAD
+            """
+        )
 
         placeholderbot = QLabel("hej")
         placeholderbot.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+        )
         placeholderbot.setMinimumSize(500, 500)
-        placeholderbot.setStyleSheet("""
+        placeholderbot.setStyleSheet(
+            """
                 background-color: white;
                 border-radius: 10px;
-            """)
+            """
+        )
 
-== == == =
-
->>>>>> > 409f0f7acc092d6c161f9c884fb7e3a7f3db6201
         appContainer = QHBoxLayout(self)
         chatContainer = QVBoxLayout(self)
 
@@ -136,7 +134,7 @@ class MainWindow(QWidget):
         buttonContainer = QHBoxLayout()
         chatContainer.addWidget(self.textEditInput)
         # buttonContainer.addWidget(self.buttonStart())
-        buttonContainer.addWidget(self.buttonStop())
+        # buttonContainer.addWidget(self.buttonStop())
         botContainer.addWidget(label)
 
         widget = HeadWidget()
@@ -155,7 +153,10 @@ class MainWindow(QWidget):
         # global counter
 
         self.textEditInput.insertHtml(
-            "<div style='font-size: 20px; color: black; padding: 20px; vertical-align:middle; '>{}</div><br />".format(text))
+            "<div style='font-size: 20px; color: black; padding: 20px; vertical-align:middle; '>{}</div><br />".format(
+                text
+            )
+        )
 
         # if (counter % 2) == 0:
         #     self.textEditInput.insertHtml(
@@ -169,7 +170,8 @@ class MainWindow(QWidget):
         button = QPushButton("KILL TINA", self)
         button.setFixedSize(250, 50)
         button.clicked.connect(QApplication.quit)
-        button.setStyleSheet("""
+        button.setStyleSheet(
+            """
             QPushButton {
                 background-color: #1e90ff;
                 color: white;
@@ -182,7 +184,8 @@ class MainWindow(QWidget):
             QPushButton:hover {
                 text-decoration: underline;
             }
-        """)
+        """
+        )
 
         return button
 
@@ -213,12 +216,13 @@ class MainWindow(QWidget):
 
     def on_hello(self):
         self.textEditInput.setText(
-            self.textEditInput.toPlainText() + "\n\nHello, starting conversation..\n\n")
+            self.textEditInput.toPlainText() + "\n\nHello, starting conversation..\n\n"
+        )
         if not self.conversation_thread.isRunning():
             self.conversation_thread.start()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = QApplication([])
     window = MainWindow()
     window.show()
